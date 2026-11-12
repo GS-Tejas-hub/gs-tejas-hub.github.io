@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Shipwatch in 45 seconds</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; background: #0b0d12; color: #f2f4f8; font: 16px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; }
+    #stage { position: relative; height: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+    .scene { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 24px; opacity: 0; transition: opacity 0.6s ease; }
+    .scene.on { opacity: 1; }
+    .scene h2 { font-size: clamp(22px, 4vw, 40px); margin: 0 0 8px; }
+    .scene p { color: #aab3c5; margin: 0; }
+    #poster { z-index: 2; background: radial-gradient(circle at 50% 40%, #1d2433, #0b0d12 70%); }
+    #poster.hide { display: none; }
+    #play-with-sound { font: inherit; font-weight: 700; padding: 14px 22px; border: 0; border-radius: 999px; background: #ffffff; color: #0b0d12; cursor: pointer; }
+    .controls { position: absolute; left: 0; right: 0; bottom: 0; z-index: 3; display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: linear-gradient(transparent, rgba(0, 0, 0, 0.7)); }
+    .controls button { font: inherit; padding: 6px 12px; border: 1px solid rgba(255, 255, 255, 0.35); border-radius: 6px; background: transparent; color: #ffffff; cursor: pointer; }
+    .time { margin-left: auto; font-variant-numeric: tabular-nums; color: #cfd6e4; }
+    .bar { position: absolute; left: 0; bottom: 0; height: 3px; background: #1f5eff; width: 0; z-index: 4; }
+  </style>
+</head>
+<body>
+  <div id="stage">
+    <div class="scene on" id="poster">
+      <h2>Shipwatch in 45 seconds</h2>
+      <p>A pull request, its checks, the deploy and the live page.</p>
+      <p>&nbsp;</p>
+      <button id="play-with-sound" type="button">Play with sound</button>
+    </div>
+    <div class="scene" data-from="0"><h2>A pull request opens</h2><p>"Change the waitlist button text"</p></div>
+    <div class="scene" data-from="9"><h2>Its checks run</h2><p>One fails: Shipwatch shows the failing step in plain words.</p></div>
+    <div class="scene" data-from="18"><h2>Fixed, merged, deployed</h2><p>The deploy is followed to the end.</p></div>
+    <div class="scene" data-from="27"><h2>The live page, read back</h2><p>The new button text is really there.</p></div>
+    <div class="scene" data-from="36"><h2>One message</h2><p>"Live: the waitlist button now says Get early access."</p></div>
+
+    <div class="controls" role="group" aria-label="Video controls">
+      <button id="toggle" type="button" aria-label="Play">Play</button>
+      <button id="sound" type="button" aria-label="Sound on" aria-pressed="true">Sound on</button>
+      <span class="time" id="time">0:00 / 0:45</span>
+      <button id="fullscreen" type="button" aria-label="Full screen">Full screen</button>
+    </div>
+    <div class="bar" id="bar"></div>
+  </div>
+
+  <script>
+    // A film made of scenes on a clock (no video file): Play starts the clock, Pause stops it.
+    var LENGTH = 45;
+    var t = 0;
+    var timer = null;
+    var scenes = Array.prototype.slice.call(document.querySelectorAll('.scene[data-from]'));
+    var toggle = document.getElementById('toggle');
+
+    function fmt(s) { s = Math.floor(s); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }
+    function render() {
+      var current = null;
+      scenes.forEach(function (s) { if (t >= Number(s.dataset.from)) current = s; });
+      scenes.forEach(function (s) { s.classList.toggle('on', s === current); });
+      document.getElementById('time').textContent = fmt(t) + ' / ' + fmt(LENGTH);
+      document.getElementById('bar').style.width = (100 * t / LENGTH) + '%';
+    }
+    function play() {
+      document.getElementById('poster').classList.add('hide');
+      if (timer) return;
+      if (t >= LENGTH) t = 0;
+      timer = setInterval(function () {
+        t = Math.min(LENGTH, t + 0.25);
+        render();
+        if (t >= LENGTH) pause();
+      }, 250);
+      toggle.textContent = 'Pause';
+      toggle.setAttribute('aria-label', 'Pause');
+      render();
+    }
+    function pause() {
+      clearInterval(timer);
+      timer = null;
+      toggle.textContent = 'Play';
+      toggle.setAttribute('aria-label', 'Play');
+    }
+
+    document.getElementById('play-with-sound').addEventListener('click', play);
+    toggle.addEventListener('click', function () { if (timer) pause(); else play(); });
+    document.getElementById('sound').addEventListener('click', function () {
+      var on = this.getAttribute('aria-pressed') !== 'true';
+      this.setAttribute('aria-pressed', String(on));
+      this.textContent = on ? 'Sound on' : 'Sound off';
+      this.setAttribute('aria-label', this.textContent);
+    });
+    document.getElementById('fullscreen').addEventListener('click', function () {
+      var stage = document.getElementById('stage');
+      if (document.fullscreenElement) document.exitFullscreen();
+      else if (stage.requestFullscreen) stage.requestFullscreen();
+    });
+    render();
+  </script>
+</body>
+</html>

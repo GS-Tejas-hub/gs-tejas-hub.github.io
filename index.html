@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Shipwatch: know every deploy worked</title>
+  <meta name="description" content="Shipwatch checks a release from the first commit to the live page.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="top">
+    <a class="logo" href="index.html">Shipwatch</a>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="#demo">Watch the film</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" id="top">
+      <h1>Know every deploy worked.</h1>
+      <p class="sub">Shipwatch checks your release from the first commit to the live page, so a broken button never reaches your customers.</p>
+      <form id="join" class="join" action="#join" novalidate>
+        <label class="visually-hidden" for="email">Work email</label>
+        <input id="email" name="email" type="email" placeholder="you@company.com" autocomplete="email" required>
+        <button id="waitlist-button" type="submit">Join the waitlist</button>
+      </form>
+      <p class="small" id="join-note">No spam. One email when we open.</p>
+      <p class="small thanks" id="join-thanks" hidden>Thanks, you are on the list.</p>
+    </section>
+
+    <section id="how" class="band">
+      <h2>How it works</h2>
+      <p class="statement">Shipwatch runs the tests, checks every deploy and watches the live page.</p>
+      <ol class="steps">
+        <li><strong>Connect your repo.</strong> One sign-in, no config file.</li>
+        <li><strong>Merge as usual.</strong> Shipwatch follows the pull request, the build and the deploy.</li>
+        <li><strong>Get one message.</strong> It tells you what changed on the live page, or what broke and where.</li>
+      </ol>
+    </section>
+
+    <section id="features">
+      <h2>What you get</h2>
+      <div class="cards">
+        <article class="card">
+          <h3>Checks before the merge</h3>
+          <p>A failing check stops the merge, and you see the failing step in plain words.</p>
+        </article>
+        <article class="card">
+          <h3>A deploy you can see</h3>
+          <p>Every deploy is followed to the end. A stuck build is reported, not forgotten.</p>
+        </article>
+        <article class="card">
+          <h3>The live page, read back</h3>
+          <p>After the deploy, Shipwatch opens the page and confirms your change is really there.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="quotes" class="band">
+      <h2>Teams on the early list</h2>
+      <blockquote>
+        <p>"We stopped finding broken buttons a day late."</p>
+        <footer>Product lead, a 12-person studio (made up for this test site)</footer>
+      </blockquote>
+      <blockquote>
+        <p>"One message after each deploy is all I read."</p>
+        <footer>Founder, a two-person app (made up for this test site)</footer>
+      </blockquote>
+    </section>
+
+    <section id="faq">
+      <h2>Questions</h2>
+      <details>
+        <summary>Which hosts does it work with?</summary>
+        <p>Any host a GitHub workflow deploys to: GitHub Pages, Firebase Hosting, Vercel, Netlify.</p>
+      </details>
+      <details>
+        <summary>Does it change my code?</summary>
+        <p>Only through a pull request you can read first.</p>
+      </details>
+      <details>
+        <summary>What does it cost?</summary>
+        <p>Free for one repo. See <a href="pricing.html">Pricing</a>.</p>
+      </details>
+      <details>
+        <summary>When does it open?</summary>
+        <p>Early next year. Join the waitlist and we will write once.</p>
+      </details>
+    </section>
+
+    <section id="demo" class="band">
+      <h2>Shipwatch in 45 seconds</h2>
+      <p class="sub">A short film: a pull request, its checks, the deploy and the live page.</p>
+      <div class="film">
+        <iframe id="demo-film" src="film/player.html" title="Shipwatch in 45 seconds" loading="lazy" allow="fullscreen"></iframe>
+      </div>
+    </section>
+  </main>
+
+  <footer class="bottom">
+    <a href="pricing.html">Pricing</a>
+    <p class="small">A test site for Scopeout's Scout checks. Shipwatch is not a real product.</p>
+  </footer>
+
+  <script>
+    // Analytics stand-in: events are kept on the page (dataLayer), nothing is sent anywhere.
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { window.dataLayer.push(arguments); }
+
+    // The film plays inside its frame, so the page cannot see the click itself. A play is counted when
+    // the window loses focus to the film's frame (a click inside an iframe moves focus there).
+    window.addEventListener('blur', function () {
+      setTimeout(function () {
+        if (document.activeElement && document.activeElement.id === 'demo-film') {
+          gtag('event', 'film_played', { film: 'shipwatch-45s' });
+        }
+      }, 0);
+    });
+
+    document.getElementById('join').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var email = document.getElementById('email');
+      if (!email.value || email.validity.typeMismatch) { email.focus(); return; }
+      gtag('event', 'waitlist_joined');
+      document.getElementById('join-note').hidden = true;
+      document.getElementById('join-thanks').hidden = false;
+    });
+  </script>
+</body>
+</html>
